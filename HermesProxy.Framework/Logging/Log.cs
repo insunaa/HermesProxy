@@ -47,22 +47,28 @@ namespace HermesProxy.Framework.Logging
                 {
                     Thread.Sleep(1);
 
-                    if (!logQueue.TryTake(out var msg))
-                        continue;
-
-                    Console.Write($"{DateTime.Now:H:mm:ss} |");
-
-                    Console.ForegroundColor = LogToColorType[msg.Type].Color;
-                    Console.Write($"{LogToColorType[msg.Type].Type}");
-                    Console.ResetColor();
-
-                    Console.WriteLine($"| {msg.Message}");
+                    PrintMessageFromQueue();
                 }
             });
+
+            IsLogging = true;
             logThread.IsBackground = true;
             logThread.Start();
-
             IsLogging = logThread.ThreadState == ThreadingState.Running;
+        }
+
+        public static void PrintMessageFromQueue()
+        {
+            if (!logQueue.TryTake(out var msg))
+                return;
+
+            Console.Write($"{DateTime.Now:H:mm:ss} |");
+
+            Console.ForegroundColor = LogToColorType[msg.Type].Color;
+            Console.Write($"{LogToColorType[msg.Type].Type}");
+            Console.ResetColor();
+
+            Console.WriteLine($"| {msg.Message}");
         }
 
         public static void Print(LogType type, object text, [CallerMemberName] string method = "", [CallerFilePath] string path = "")

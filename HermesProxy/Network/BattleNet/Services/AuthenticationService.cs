@@ -8,6 +8,7 @@ using Google.Protobuf;
 
 using HermesProxy.Framework.Constants;
 using HermesProxy.Framework.Logging;
+using HermesProxy.Framework.Util;
 using HermesProxy.Network.BattleNet.Services;
 
 namespace HermesProxy.Network.BattleNet.Session

@@ -2,6 +2,7 @@
 
 using HermesProxy.Framework.Logging;
 using HermesProxy.Network.BattleNet;
+using HermesProxy.Network.World;
 
 namespace HermesProxy
 {
@@ -15,10 +16,8 @@ namespace HermesProxy
             Log.Print(LogType.Debug, $"Client Version: {Settings.ClientBuild}");
             Log.Print(LogType.Debug, $"Server Version: {Settings.ServerBuild}");
 
-            // Disabled until we actually need it.
-            //GameData.LoadEverything();
-
             BattlenetServer.Start(Settings.ServerAddress);
+            WorldServer.Start(Settings.ServerAddress);
 
             while (true)
             {

@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-using HermesProxy.Framework.Constants;
+using HermesProxy.Framework.Constants.Network;
 using HermesProxy.Framework.Util;
 
 namespace HermesProxy.Network.Realm

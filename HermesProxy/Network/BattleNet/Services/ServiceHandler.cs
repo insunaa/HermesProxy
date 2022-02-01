@@ -102,7 +102,7 @@ namespace HermesProxy.Network.BattleNet.Services
                 else
                     errorCode = (BattlenetRpcErrorCode)_methodCaller.DynamicInvoke(session, request, response);
 
-                Log.Print(LogType.Debug, $"Session: {session.GetRemoteEndpoint()} Request: {request} with status: {errorCode}");
+                // Log.Print(LogType.Debug, $"Session: {session.GetRemoteEndpoint()} Request: {request} with status: {errorCode}");
 
                 if (errorCode == BattlenetRpcErrorCode.Ok)
                     await session.SendResponse(token, response);
@@ -123,7 +123,7 @@ namespace HermesProxy.Network.BattleNet.Services
                 else
                     errorCode = (BattlenetRpcErrorCode)_methodCaller.DynamicInvoke(session, request);
 
-                Log.Print(LogType.Debug, $"Session: {session.GetRemoteEndpoint()} Request: {request} with status: {errorCode}");
+                // Log.Print(LogType.Debug, $"Session: {session.GetRemoteEndpoint()} Request: {request} with status: {errorCode}");
 
                 if (errorCode != BattlenetRpcErrorCode.Ok)
                     await session.SendResponse(token, errorCode);

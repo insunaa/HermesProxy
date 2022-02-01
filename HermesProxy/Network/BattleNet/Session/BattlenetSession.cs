@@ -46,10 +46,10 @@ namespace HermesProxy.Network.BattleNet.Session
 
             _clientRequestHandlers = new Dictionary<string, ClientRequestHandler>
             {
-                { "Command_RealmListTicketRequest_v1_b9",   GetRealmListTicket },
-                { "Command_LastCharPlayedRequest_v1_b9",    GetLastPlayedCharacter },
-                { "Command_RealmListRequest_v1_b9",         GetRealmList },
-                { "Command_RealmJoinRequest_v1_b9",         JoinRealm }
+                { "Command_RealmListTicketRequest_v1_bcc1", GetRealmListTicket },
+                { "Command_LastCharPlayedRequest_v1_bcc1",  GetLastPlayedCharacter },
+                { "Command_RealmListRequest_v1_bcc1",       GetRealmList },
+                { "Command_RealmJoinRequest_v1_bcc1",       JoinRealm }
             };
 
             _socket = socket;
@@ -256,7 +256,7 @@ namespace HermesProxy.Network.BattleNet.Session
         {
             var realmAddress = GetParam(parameters, "Param_RealmAddress");
             if (realmAddress != null)
-                return RealmManager.JoinRealm((uint)realmAddress.UintValue, _build, ((IPEndPoint)_socket.RemoteEndPoint).Address, _clientSecret, response);
+                return RealmManager.JoinRealm((uint)realmAddress.UintValue, ((IPEndPoint)_socket.RemoteEndPoint).Address, _clientSecret, response);
 
             return BattlenetRpcErrorCode.WowServicesInvalidJoinTicket;
         }

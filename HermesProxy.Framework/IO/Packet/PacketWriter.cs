@@ -1,8 +1,9 @@
-﻿using HermesProxy.Framework.Math;
-using System;
+﻿using System;
 using System.IO;
 using System.Numerics;
 using System.Text;
+
+using HermesProxy.Framework.Util;
 
 namespace HermesProxy.Framework.IO.Packet
 {
@@ -134,11 +135,11 @@ namespace HermesProxy.Framework.IO.Packet
             WriteFloat(vector.Z);
         }
 
-        // public void WritePackedTime(long time)
-        // {
-        //     var now = Time.UnixTimeToDateTime(time);
-        //     WriteUInt32(Convert.ToUInt32((now.Year - 2000) << 24 | (now.Month - 1) << 20 | (now.Day - 1) << 14 | (int)now.DayOfWeek << 11 | now.Hour << 6 | now.Minute));
-        // }
+        public void WritePackedTime(long time)
+        {
+            var now = Time.UnixTimeToDateTime(time);
+            WriteUInt32(Convert.ToUInt32((now.Year - 2000) << 24 | (now.Month - 1) << 20 | (now.Day - 1) << 14 | (int)now.DayOfWeek << 11 | now.Hour << 6 | now.Minute));
+        }
 
         public void WritePackedTime()
         {
@@ -146,12 +147,12 @@ namespace HermesProxy.Framework.IO.Packet
             WriteUInt32(Convert.ToUInt32((now.Year - 2000) << 24 | (now.Month - 1) << 20 | (now.Day - 1) << 14 | (int)now.DayOfWeek << 11 | now.Hour << 6 | now.Minute));
         }
 
-        public void Write(Position pos)
+        public void Write(Vector4 pos)
         {
             WriteFloat(pos.X);
             WriteFloat(pos.Y);
             WriteFloat(pos.Z);
-            WriteFloat(pos.Orientation);
+            WriteFloat(pos.W);
         }
 
         #endregion

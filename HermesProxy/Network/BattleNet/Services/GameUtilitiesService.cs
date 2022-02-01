@@ -51,7 +51,7 @@ namespace HermesProxy.Network.BattleNet.Session
             if (!_authed)
                 return BattlenetRpcErrorCode.Denied;
 
-            if (request.AttributeKey == "Command_RealmListRequest_v1_b9")
+            if (request.AttributeKey == "Command_RealmListRequest_v1_bcc1")
             {
                 RealmManager.WriteSubRegions(response);
                 return BattlenetRpcErrorCode.Ok;

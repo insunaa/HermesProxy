@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HermesProxy.Framework.Constants
+namespace HermesProxy.Framework.Constants.Network
 {
     public enum AuthCommand : byte
     {
@@ -46,5 +46,11 @@ namespace HermesProxy.Framework.Constants
         Recommended         = 0x20,
         NewPlayers          = 0x40,
         Full                = 0x80
+    }
+
+    public enum ConnectionType
+    {
+        Realm               = 0,
+        Instance            = 1
     }
 }

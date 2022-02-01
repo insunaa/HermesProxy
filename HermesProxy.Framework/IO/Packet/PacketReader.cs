@@ -2,7 +2,7 @@
 using System.IO;
 using System.Numerics;
 using System.Text;
-using HermesProxy.Framework.Math;
+
 using HermesProxy.Framework.Util;
 
 namespace HermesProxy.Framework.IO.Packet
@@ -132,9 +132,9 @@ namespace HermesProxy.Framework.IO.Packet
             return builder.ToString();
         }
 
-        public Position ReadPosition()
+        public Vector4 ReadPosition()
         {
-            return new Position(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
+            return new Vector4(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
         }
 
         public Vector3 ReadVector3()

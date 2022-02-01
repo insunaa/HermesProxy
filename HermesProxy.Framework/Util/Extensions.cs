@@ -120,6 +120,15 @@ namespace HermesProxy.Framework.Util
             return result;
         }
 
+        public static bool Compare(this byte[] b, byte[] b2)
+        {
+            for (int i = 0; i < b2.Length; i++)
+                if (b[i] != b2[i])
+                    return false;
+
+            return true;
+        }
+
         /// <summary>
         /// Shift bytes with specified shift count.
         /// </summary>

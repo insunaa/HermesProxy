@@ -5,9 +5,11 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HermesProxy", "HermesProxy\HermesProxy.csproj", "{2922D5E8-A903-4CD0-903D-F5CB7DC0648C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HermesProxy.Framework", "HermesProxy.Framework\HermesProxy.Framework.csproj", "{1F4F194A-0696-4EC3-8AE9-2DA1725C129C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HermesProxy.Framework", "HermesProxy.Framework\HermesProxy.Framework.csproj", "{1F4F194A-0696-4EC3-8AE9-2DA1725C129C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HermesProxy.Proto", "HermesProxy.Proto\HermesProxy.Proto.csproj", "{4B165864-816A-4680-A8BF-28F7C88FBA6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HermesProxy.Proto", "HermesProxy.Proto\HermesProxy.Proto.csproj", "{4B165864-816A-4680-A8BF-28F7C88FBA6B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{C6400418-2DFD-4D22-8E68-FDFE69AB4FD5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -82,7 +82,7 @@ namespace HermesProxy.Network.Realm
         /// <summary>
         /// Handles the JoinRealm message from the client.
         /// </summary>
-        public static BattlenetRpcErrorCode JoinRealm(uint realmAddress, uint build, IPAddress clientAddress, byte[] clientSecret, ClientResponse response)
+        public static BattlenetRpcErrorCode JoinRealm(uint realmAddress, IPAddress clientAddress, byte[] clientSecret, ClientResponse response)
         {
             var realm = Realms.Find(x => x.ID == realmAddress);
             if (realm == null)
@@ -98,8 +98,8 @@ namespace HermesProxy.Network.Realm
             };
             addressFamily.Addresses.Add(new()
             {
-                Ip = realm.GetAddressForClient(clientAddress).Address.ToString(),
-                Port = realm.Port,
+                Ip = "127.0.0.1",
+                Port = 9085,
             });
             realmListServerIPAddress.Families.Add(addressFamily);
 

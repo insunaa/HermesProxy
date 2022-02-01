@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace HermesProxy.Network.BattleNet.REST
 {
@@ -43,59 +43,55 @@ namespace HermesProxy.Network.BattleNet.REST
         }
     }
 
-    [DataContract]
     public class FormInputs
     {
-        [DataMember(Name = "inputs")]
-        public List<FormInput> Inputs = new();
+        [JsonPropertyName("inputs")]
+        public List<FormInput> Inputs { get; set; } = new();
 
-        [DataMember(Name = "prompt")]
-        public string Prompt;
+        [JsonPropertyName("prompt")]
+        public string Prompt { get; set; }
 
-        [DataMember(Name = "type")]
-        public string Type;
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
     }
 
-    [DataContract]
     public class FormInput
     {
-        [DataMember(Name = "input_id")]
-        public string ID;
+        [JsonPropertyName("input_id")]
+        public string ID { get; set; }
 
-        [DataMember(Name = "type")]
-        public string Type;
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
 
-        [DataMember(Name = "label")]
-        public string Label;
+        [JsonPropertyName("label")]
+        public string Label { get; set; }
 
-        [DataMember(Name = "max_length")]
-        public int MaxLength;
+        [JsonPropertyName("max_length")]
+        public int MaxLength { get; set; }
     }
 
-    [DataContract]
     public class FormInputValue
     {
-        [DataMember(Name = "input_id")]
-        public string ID;
+        [JsonPropertyName("input_id")]
+        public string ID { get; set; }
 
-        [DataMember(Name = "value")]
-        public string Value;
+        [JsonPropertyName("value")]
+        public string Value { get; set; }
     }
 
-    [DataContract]
     public class LogonData
     {
-        [DataMember(Name = "version")]
-        public string Version;
+        [JsonPropertyName("version")]
+        public string Version { get; set; }
 
-        [DataMember(Name = "program_id")]
-        public string Program;
+        [JsonPropertyName("program_id")]
+        public string Program { get; set; }
 
-        [DataMember(Name = "platform_id")]
-        public string Platform;
+        [JsonPropertyName("platform_id")]
+        public string Platform { get; set; }
 
-        [DataMember(Name = "inputs")]
-        public List<FormInputValue> Inputs = new();
+        [JsonPropertyName("inputs")]
+        public List<FormInputValue> Inputs { get; set; } = new();
 
         public string GetDataFromId(string data)
         {
@@ -103,162 +99,177 @@ namespace HermesProxy.Network.BattleNet.REST
         }
     }
 
-    [DataContract]
     public class LogonResult
     {
-        [DataMember(Name = "authentication_state")]
-        public string AuthenticationState;
+        [JsonPropertyName("authentication_state")]
+        public string AuthenticationState { get; set; }
 
-        [DataMember(Name = "login_ticket")]
-        public string LoginTicket;
+        [JsonPropertyName("login_ticket")]
+        public string LoginTicket { get; set; }
 
-        [DataMember(Name = "error_code")]
-        public string ErrorCode;
+        [JsonPropertyName("error_code")]
+        public string ErrorCode { get; set; }
 
-        [DataMember(Name = "error_message")]
-        public string ErrorMessage;
+        [JsonPropertyName("error_message")]
+        public string ErrorMessage { get; set; }
 
-        [DataMember(Name = "support_error_code")]
-        public string SupportErrorCode;
+        [JsonPropertyName("support_error_code")]
+        public string SupportErrorCode { get; set; }
 
-        [DataMember(Name = "authenticator_form")]
-        public FormInputs AuthenticatorForm = new();
+        [JsonPropertyName("authenticator_form")]
+        public FormInputs AuthenticatorForm { get; set; } = new();
     }
 
-    [DataContract]
     public class ClientVersion
     {
-        [DataMember(Name = "versionBuild")]
-        public int Build;
+        [JsonPropertyName("versionBuild")]
+        public int Build { get; set; }
 
-        [DataMember(Name = "versionMajor")]
-        public int Major;
+        [JsonPropertyName("versionMajor")]
+        public int Major { get; set; }
 
-        [DataMember(Name = "versionMinor")]
-        public int Minor;
+        [JsonPropertyName("versionMinor")]
+        public int Minor { get; set; }
 
-        [DataMember(Name = "versionRevision")]
-        public int Revision;
+        [JsonPropertyName("versionRevision")]
+        public int Revision { get; set; }
     }
 
-    [DataContract]
     public class RealmListTicketInformation
     {
-        [DataMember(Name = "platform")]
-        public int Platform;
+        [JsonPropertyName("platform")]
+        public int Platform { get; set; }
 
-        [DataMember(Name = "buildVariant")]
-        public string BuildVariant;
+        [JsonPropertyName("buildVariant")]
+        public string BuildVariant { get; set; }
 
-        [DataMember(Name = "type")]
-        public int Type;
+        [JsonPropertyName("type")]
+        public int Type { get; set; }
 
-        [DataMember(Name = "timeZone")]
-        public string Timezone;
+        [JsonPropertyName("timeZone")]
+        public string Timezone { get; set; }
 
-        [DataMember(Name = "currentTime")]
-        public int CurrentTime;
+        [JsonPropertyName("currentTime")]
+        public int CurrentTime { get; set; }
 
-        [DataMember(Name = "textLocale")]
-        public int TextLocale;
+        [JsonPropertyName("textLocale")]
+        public int TextLocale { get; set; }
 
-        [DataMember(Name = "audioLocale")]
-        public int AudioLocale;
+        [JsonPropertyName("audioLocale")]
+        public int AudioLocale { get; set; }
 
-        [DataMember(Name = "versionDataBuild")]
-        public int VersionDataBuild;
+        [JsonPropertyName("versionDataBuild")]
+        public int VersionDataBuild { get; set; }
 
-        [DataMember(Name = "version")]
-        public ClientVersion ClientVersion = new();
+        [JsonPropertyName("version")]
+        public ClientVersion ClientVersion { get; set; } = new();
 
-        [DataMember(Name = "secret")]
-        public List<int> Secret;
+        [JsonPropertyName("secret")]
+        public List<byte> Secret { get; set; }
 
-        [DataMember(Name = "clientArch")]
-        public int ClientArch;
+        [JsonPropertyName("clientArch")]
+        public int ClientArch { get; set; }
 
-        [DataMember(Name = "systemVersion")]
-        public string SystemVersion;
+        [JsonPropertyName("systemVersion")]
+        public string SystemVersion { get; set; }
 
-        [DataMember(Name = "platformType")]
-        public int PlatformType;
+        [JsonPropertyName("platformType")]
+        public int PlatformType { get; set; }
 
-        [DataMember(Name = "systemArch")]
-        public int SystemArch;
+        [JsonPropertyName("systemArch")]
+        public int SystemArch { get; set; }
     }
 
-    [DataContract]
     public class RealmListTicketClientInformation
     {
-        [DataMember(Name = "info")]
-        public RealmListTicketInformation Info = new();
+        [JsonPropertyName("info")]
+        public RealmListTicketInformation Info { get; set; } = new();
     }
 
-    [DataContract]
     public class RealmEntry
     {
-        [DataMember(Name = "wowRealmAddress")]
+        [JsonPropertyName("wowRealmAddress")]
         public int WowRealmAddress { get; set; }
 
-        [DataMember(Name = "cfgTimezonesID")]
+        [JsonPropertyName("cfgTimezonesID")]
         public int CfgTimezonesID { get; set; }
 
-        [DataMember(Name = "populationState")]
+        [JsonPropertyName("populationState")]
         public int PopulationState { get; set; }
 
-        [DataMember(Name = "cfgCategoriesID")]
+        [JsonPropertyName("cfgCategoriesID")]
         public int CfgCategoriesID { get; set; }
 
-        [DataMember(Name = "version")]
+        [JsonPropertyName("version")]
         public ClientVersion Version { get; set; } = new();
 
-        [DataMember(Name = "cfgRealmsID")]
+        [JsonPropertyName("cfgRealmsID")]
         public int CfgRealmsID { get; set; }
 
-        [DataMember(Name = "flags")]
+        [JsonPropertyName("flags")]
         public int Flags { get; set; }
 
-        [DataMember(Name = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "cfgConfigsID")]
+        [JsonPropertyName("cfgConfigsID")]
         public int CfgConfigsID { get; set; }
 
-        [DataMember(Name = "cfgLanguagesID")]
+        [JsonPropertyName("cfgLanguagesID")]
         public int CfgLanguagesID { get; set; }
     }
 
-    [DataContract]
     public class RealmListUpdates
     {
-        [DataMember(Name = "updates")]
-        public IList<RealmListUpdate> Updates = new List<RealmListUpdate>();
+        [JsonPropertyName("updates")]
+        public IList<RealmListUpdate> Updates { get; set; } = new List<RealmListUpdate>();
     }
 
-    [DataContract]
     public class RealmListUpdate
     {
-        [DataMember(Name = "update")]
-        public RealmEntry Update = new();
+        [JsonPropertyName("update")]
+        public RealmEntry Update { get; set; } = new();
 
-        [DataMember(Name = "deleting")]
-        public bool Deleting;
+        [JsonPropertyName("deleting")]
+        public bool Deleting { get; set; }
     }
 
-    [DataContract]
     public class RealmCharacterCountList
     {
-        [DataMember(Name = "counts")]
-        public List<RealmCharacterCountEntry> Counts = new();
+        [JsonPropertyName("counts")]
+        public List<RealmCharacterCountEntry> Counts { get; set; } = new();
     }
 
-    [DataContract]
     public class RealmCharacterCountEntry
     {
-        [DataMember(Name = "wowRealmAddress")]
-        public int WowRealmAddress;
+        [JsonPropertyName("wowRealmAddress")]
+        public int WowRealmAddress { get; set; }
 
-        [DataMember(Name = "count")]
-        public int Count;
+        [JsonPropertyName("count")]
+        public int Count { get; set; }
+    }
+
+    public class RealmListServerIPAddresses
+    {
+        [JsonPropertyName("families")]
+        public List<AddressFamily> Families { get; set; } = new();
+    }
+
+    public class AddressFamily
+    {
+        [JsonPropertyName("family")]
+        public int Id { get; set; }
+
+        [JsonPropertyName("addresses")]
+        public List<Address> Addresses { get; set; } = new();
+    }
+
+    public class Address
+    {
+        [JsonPropertyName("ip")]
+        public string Ip { get; set; }
+
+        [JsonPropertyName("port")]
+        public int Port { get; set; }
     }
 }

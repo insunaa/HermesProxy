@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using ThreadingState = System.Threading.ThreadState;
 
 namespace HermesProxy.Framework.Logging
 {
@@ -51,10 +49,8 @@ namespace HermesProxy.Framework.Logging
                 }
             });
 
-            IsLogging = true;
             logThread.IsBackground = true;
             logThread.Start();
-            IsLogging = logThread.ThreadState == ThreadingState.Running;
         }
 
         public static void PrintMessageFromQueue()

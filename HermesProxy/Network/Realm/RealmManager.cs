@@ -48,8 +48,8 @@ namespace HermesProxy.Network.Realm
             foreach (var realmInfo in Realms)
             {
                 var flag = realmInfo.Flags;
-                // if (realmInfo.Build != build || Settings.GetBuild(client: true) != build)
-                //     flag |= RealmFlags.VersionMisMatch;
+                if (Settings.GetBuild(client: true) != build)
+                    flag |= RealmFlags.VersionMisMatch;
 
                 var realmListUpdate = new RealmListUpdate
                 {
@@ -61,20 +61,10 @@ namespace HermesProxy.Network.Realm
                 realmListUpdate.Update.CfgCategoriesID = realmInfo.Timezone;
 
                 realmListUpdate.Update.Version = new();
-                if (realmInfo.VersionMajor != 0 && realmInfo.VersionMinor != 0 && realmInfo.VersionBugfix != 0)
-                {
-                    realmListUpdate.Update.Version.Major = realmInfo.VersionMajor;
-                    realmListUpdate.Update.Version.Minor = realmInfo.VersionMinor;
-                    realmListUpdate.Update.Version.Revision = realmInfo.VersionBugfix;
-                    realmListUpdate.Update.Version.Build = realmInfo.Build;
-                }
-                else
-                {
-                    realmListUpdate.Update.Version.Major = Settings.GetMajorPatchVersion(client: true);
-                    realmListUpdate.Update.Version.Minor = Settings.GetMinorPatchVersion(client: true);
-                    realmListUpdate.Update.Version.Revision = Settings.GetRevisionPatchVersion(client: true);
-                    realmListUpdate.Update.Version.Build = Settings.GetBuild(client: true);
-                }
+                realmListUpdate.Update.Version.Major = Settings.GetMajorPatchVersion(client: true);
+                realmListUpdate.Update.Version.Minor = Settings.GetMinorPatchVersion(client: true);
+                realmListUpdate.Update.Version.Revision = Settings.GetRevisionPatchVersion(client: true);
+                realmListUpdate.Update.Version.Build = Settings.GetBuild(client: true);
 
                 realmListUpdate.Update.CfgRealmsID = realmInfo.ID;
                 realmListUpdate.Update.Flags = (int)flag;

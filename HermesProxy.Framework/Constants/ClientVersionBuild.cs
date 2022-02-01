@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HermesProxy.Enums
+namespace HermesProxy.Framework.Constants
 {
     public enum ClientVersionBuild
     {

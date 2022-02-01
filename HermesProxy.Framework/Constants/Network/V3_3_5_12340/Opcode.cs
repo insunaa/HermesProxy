@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HermesProxy.Enums.V3_3_5_12340
+namespace HermesProxy.Framework.Constants.Network.V3_3_5_12340
 {
     public enum Opcode
     {

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 
+using Bgs.Protocol;
 using Bgs.Protocol.Connection.V1;
 
 using HermesProxy.Framework.Constants;
@@ -24,6 +26,21 @@ namespace HermesProxy.Network.BattleNet.Session
             response.ServerTime = (ulong)Time.UnixTimeMilliseconds;
             response.UseBindlessRpc = request.UseBindlessRpc;
 
+            return BattlenetRpcErrorCode.Ok;
+        }
+
+        [BattlenetService(ServiceHash.ConnectionService, 5)]
+        public BattlenetRpcErrorCode HandleKeepAlive(NoData request) => BattlenetRpcErrorCode.Ok;
+
+        [BattlenetService(ServiceHash.ConnectionService, 7)]
+        public async Task<BattlenetRpcErrorCode> HandleDisconnectRequest(DisconnectRequest request)
+        {
+            await SendRequest(ServiceHash.ConnectionService, 4, new DisconnectNotification
+            {
+                ErrorCode = request.ErrorCode,
+            });
+
+            await CloseSocket();
             return BattlenetRpcErrorCode.Ok;
         }
     }

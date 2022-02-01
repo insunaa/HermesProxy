@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Numerics;
 using System.Reflection;
 using System.Text;
@@ -117,6 +118,80 @@ namespace HermesProxy.Framework.Util
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Shift bytes with specified shift count.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="shiftCount"></param>
+        /// <returns></returns>
+        static uint LeftRotate(this uint value, int shiftCount)
+        {
+            return (value << shiftCount) | (value >> (0x20 - shiftCount));
+        }
+
+        /// <summary>
+        /// Generate a random byte array key from given length.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static byte[] GenerateRandomKey(this byte[] s, int length)
+        {
+            var random = new Random((int)((uint)(Guid.NewGuid().GetHashCode() ^ 1 >> 89 << 2 ^ 42)).LeftRotate(13));
+            var key = new byte[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                int randValue;
+
+                do
+                {
+                    randValue = (int)((uint)random.Next(0xFF)).LeftRotate(1) ^ i;
+                } while (randValue > 0xFF && randValue <= 0);
+
+                key[i] = (byte)randValue;
+            }
+
+            return key;
+        }
+
+        /// <summary>
+        /// Combine 2 byte arrays.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="pData"></param>
+        /// <returns></returns>
+        public static byte[] Combine(this byte[] data, params byte[][] pData)
+        {
+            var combined = data;
+
+            foreach (var arr in pData)
+            {
+                var currentSize = combined.Length;
+
+                Array.Resize(ref combined, currentSize + arr.Length);
+
+                Buffer.BlockCopy(arr, 0, combined, currentSize, arr.Length);
+            }
+
+            return combined;
+        }
+
+        public static IPAddress GetNetworkAddress(this IPAddress address, IPAddress subnetMask)
+        {
+            var ipAdressBytes = address.GetAddressBytes();
+            var subnetMaskBytes = subnetMask.GetAddressBytes();
+
+            if (ipAdressBytes.Length != subnetMaskBytes.Length)
+                throw new ArgumentException("Lengths of IP address and subnet mask do not match.");
+
+            var broadcastAddress = new byte[ipAdressBytes.Length];
+            for (int i = 0; i < broadcastAddress.Length; i++)
+                broadcastAddress[i] = (byte)(ipAdressBytes[i] & (subnetMaskBytes[i]));
+
+            return new IPAddress(broadcastAddress);
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using ThreadingState = System.Threading.ThreadState;
 
 namespace HermesProxy.Framework.Logging
 {
@@ -47,22 +45,26 @@ namespace HermesProxy.Framework.Logging
                 {
                     Thread.Sleep(1);
 
-                    if (!logQueue.TryTake(out var msg))
-                        continue;
-
-                    Console.Write($"{DateTime.Now:H:mm:ss} |");
-
-                    Console.ForegroundColor = LogToColorType[msg.Type].Color;
-                    Console.Write($"{LogToColorType[msg.Type].Type}");
-                    Console.ResetColor();
-
-                    Console.WriteLine($"| {msg.Message}");
+                    PrintMessageFromQueue();
                 }
             });
+
             logThread.IsBackground = true;
             logThread.Start();
+        }
 
-            IsLogging = logThread.ThreadState == ThreadingState.Running;
+        public static void PrintMessageFromQueue()
+        {
+            if (!logQueue.TryTake(out var msg))
+                return;
+
+            Console.Write($"{DateTime.Now:H:mm:ss} |");
+
+            Console.ForegroundColor = LogToColorType[msg.Type].Color;
+            Console.Write($"{LogToColorType[msg.Type].Type}");
+            Console.ResetColor();
+
+            Console.WriteLine($"| {msg.Message}");
         }
 
         public static void Print(LogType type, object text, [CallerMemberName] string method = "", [CallerFilePath] string path = "")
@@ -81,29 +83,6 @@ namespace HermesProxy.Framework.Logging
             }
 
             return location;
-        }
-
-        private static string NameOfCallingClass()
-        {
-            Type declaringType;
-
-            var fullName = string.Empty;
-            var skipFrames = 2;
-
-            do
-            {
-                var method = new StackFrame(skipFrames, false).GetMethod();
-
-                declaringType = method.DeclaringType;
-                if (declaringType == null)
-                    return method.Name;
-
-                skipFrames++;
-                fullName = declaringType.Name;
-            }
-            while (declaringType.Module.Name.Equals("mscorlib.dll", StringComparison.OrdinalIgnoreCase));
-
-            return fullName;
         }
     }
 }

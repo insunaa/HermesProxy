@@ -99,9 +99,9 @@ namespace HermesProxy.Network.Auth
                 writer.WriteUInt16((ushort)(Username.Length + 30));
                 writer.WriteBytes(Encoding.ASCII.GetBytes("WoW"));
                 writer.WriteUInt8(0);
-                writer.WriteUInt8(Settings.GetServerExpansionVersion());
-                writer.WriteUInt8(Settings.GetServerMajorPatchVersion());
-                writer.WriteUInt8(Settings.GetServerMinorPatchVersion());
+                writer.WriteUInt8(Settings.GetMajorPatchVersion());
+                writer.WriteUInt8(Settings.GetMinorPatchVersion());
+                writer.WriteUInt8(Settings.GetRevisionPatchVersion());
                 writer.WriteUInt16((ushort)Settings.ServerBuild);
                 writer.WriteBytes(Encoding.ASCII.GetBytes("68x"));
                 writer.WriteUInt8(0);

@@ -8,28 +8,33 @@ namespace HermesProxy
 
         public static readonly ClientVersionBuild ClientBuild = Conf.GetEnum("ClientBuild", ClientVersionBuild.V2_5_2_40892);
         public static readonly ClientVersionBuild ServerBuild = Conf.GetEnum("ServerBuild", ClientVersionBuild.V2_4_3_8606);
-        public static byte GetServerExpansionVersion()
+
+        public static byte GetMajorPatchVersion(bool client = false)
         {
-            string str = ServerBuild.ToString();
-            str = str.Replace("V", "");
-            str = str[..str.IndexOf("_")];
-            return (byte)uint.Parse(str);
+            var str = (client ? ClientBuild.ToString() : ServerBuild.ToString()).Replace("V", "");
+            var split = str.Split('_');
+            return (byte)uint.Parse(split[0]);
         }
-        public static byte GetServerMajorPatchVersion()
+
+        public static byte GetMinorPatchVersion(bool client = false)
         {
-            string str = ServerBuild.ToString();
-            str = str[(str.IndexOf('_') + 1)..];
-            str = str[..str.IndexOf("_")];
-            return (byte)uint.Parse(str);
+            var str = (client ? ClientBuild.ToString() : ServerBuild.ToString()).Replace("V", "");
+            var split = str.Split('_');
+            return (byte)uint.Parse(split[1]);
         }
-        public static byte GetServerMinorPatchVersion()
+
+        public static byte GetRevisionPatchVersion(bool client = false)
         {
-            string str = ServerBuild.ToString();
-            str = str[(str.IndexOf('_') + 1)..];
-            str = str[(str.IndexOf('_') + 1)..];
-            str = str[..str.IndexOf("_")];
-            return (byte)uint.Parse(str);
+            var str = (client ? ClientBuild.ToString() : ServerBuild.ToString()).Replace("V", "");
+            var split = str.Split('_');
+            return (byte)uint.Parse(split[2]);
         }
+
+        public static int GetBuild(bool client = false)
+        {
+            return (int)(client ? ClientBuild : ServerBuild);
+        }
+
         public static readonly string ServerAddress = Conf.GetString("ServerAddress", "127.0.0.1");
     }
 }

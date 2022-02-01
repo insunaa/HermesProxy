@@ -1,8 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 using Bgs.Protocol;
 using Bgs.Protocol.GameUtilities.V1;
+using Google.Protobuf;
 
+using HermesProxy.Framework.Constants;
 using HermesProxy.Framework.Logging;
 using HermesProxy.Framework.Util;
 using HermesProxy.Network.BattleNet.REST;
@@ -36,36 +42,110 @@ namespace HermesProxy.Network.Realm
         /// <summary>
         /// Compress and return the <see cref="RealmInfo"/> instance.
         /// </summary>
-        public static byte[] GetRealmList()
+        public static byte[] GetRealmList(uint build)
         {
             var realmList = new RealmListUpdates();
             foreach (var realmInfo in Realms)
             {
-                realmList.Updates.Add(new RealmListUpdate
+                var flag = realmInfo.Flags;
+                // if (realmInfo.Build != build || Settings.GetBuild(client: true) != build)
+                //     flag |= RealmFlags.VersionMisMatch;
+
+                var realmListUpdate = new RealmListUpdate
                 {
                     Update = new()
-                    {
-                        WowRealmAddress = realmInfo.ID,
-                        PopulationState = 1,
-                        CfgTimezonesID  = 1,
-                        CfgCategoriesID = realmInfo.Timezone,
-                        CfgRealmsID     = realmInfo.ID,
-                        CfgConfigsID    = 1,
-                        CfgLanguagesID  = 1,
-                        Flags           = 32,
-                        Name            = realmInfo.Name,
-                        Version         = new()
-                        {
-                            Build       = 42069,
-                            Major       = 9,
-                            Minor       = 2,
-                            Revision    = 0
-                        }
-                    },
-                    Deleting = false,
-                });
+                };
+                realmListUpdate.Update.WowRealmAddress = realmInfo.ID;
+                realmListUpdate.Update.CfgTimezonesID = 1;
+                realmListUpdate.Update.PopulationState = realmInfo.Flags.HasFlag(RealmFlags.Offline) ? 0 : Math.Max((int)realmInfo.Population, 1);
+                realmListUpdate.Update.CfgCategoriesID = realmInfo.Timezone;
+
+                realmListUpdate.Update.Version = new();
+                if (realmInfo.VersionMajor != 0 && realmInfo.VersionMinor != 0 && realmInfo.VersionBugfix != 0)
+                {
+                    realmListUpdate.Update.Version.Major = realmInfo.VersionMajor;
+                    realmListUpdate.Update.Version.Minor = realmInfo.VersionMinor;
+                    realmListUpdate.Update.Version.Revision = realmInfo.VersionBugfix;
+                    realmListUpdate.Update.Version.Build = realmInfo.Build;
+                }
+                else
+                {
+                    realmListUpdate.Update.Version.Major = Settings.GetMajorPatchVersion(client: true);
+                    realmListUpdate.Update.Version.Minor = Settings.GetMinorPatchVersion(client: true);
+                    realmListUpdate.Update.Version.Revision = Settings.GetRevisionPatchVersion(client: true);
+                    realmListUpdate.Update.Version.Build = Settings.GetBuild(client: true);
+                }
+
+                realmListUpdate.Update.CfgRealmsID = realmInfo.ID;
+                realmListUpdate.Update.Flags = (int)flag;
+                realmListUpdate.Update.Name = realmInfo.Name;
+                realmListUpdate.Update.CfgConfigsID = 1;
+                realmListUpdate.Update.CfgLanguagesID = 1;
+
+                realmListUpdate.Deleting = false;
+
+                realmList.Updates.Add(realmListUpdate);
             }
             return JSON.Deflate("JSONRealmListUpdates", realmList);
+        }
+
+        /// <summary>
+        /// Handles the JoinRealm message from the client.
+        /// </summary>
+        public static BattlenetRpcErrorCode JoinRealm(uint realmAddress, uint build, IPAddress clientAddress, byte[] clientSecret, ClientResponse response)
+        {
+            var realm = Realms.Find(x => x.ID == realmAddress);
+            if (realm == null)
+                return BattlenetRpcErrorCode.UtilServerUnknownRealm;
+
+            if (realm.Flags.HasFlag(RealmFlags.Offline) || realm.Flags.HasFlag(RealmFlags.VersionMisMatch))
+                return BattlenetRpcErrorCode.UserServerNotPermittedOnRealm;
+
+            var realmListServerIPAddress = new RealmListServerIPAddresses();
+            var addressFamily = new AddressFamily
+            {
+                Id = 1
+            };
+            addressFamily.Addresses.Add(new()
+            {
+                Ip = realm.GetAddressForClient(clientAddress).Address.ToString(),
+                Port = realm.Port,
+            });
+            realmListServerIPAddress.Families.Add(addressFamily);
+
+            var compressed = JSON.Deflate("JSONRealmListServerIPAddresses", realmListServerIPAddress);
+
+            var serverSecret = RandomNumberGenerator.GetBytes(32);
+            var keyData = clientSecret.Combine(serverSecret);
+
+            response.Attribute.Add(new Bgs.Protocol.Attribute
+            {
+                Name = "Param_RealmJoinTicket",
+                Value = new Variant
+                {
+                    BlobValue = ByteString.CopyFrom("Wow1", Encoding.UTF8)
+                }
+            });
+
+            response.Attribute.Add(new Bgs.Protocol.Attribute
+            {
+                Name = "Param_ServerAddresses",
+                Value = new Variant
+                {
+                    BlobValue = ByteString.CopyFrom(compressed)
+                }
+            });
+
+            response.Attribute.Add(new Bgs.Protocol.Attribute
+            {
+                Name = "Param_JoinSecret",
+                Value = new Variant
+                {
+                    BlobValue = ByteString.CopyFrom(serverSecret)
+                }
+            });
+
+            return BattlenetRpcErrorCode.Ok;
         }
 
         /// <summary>

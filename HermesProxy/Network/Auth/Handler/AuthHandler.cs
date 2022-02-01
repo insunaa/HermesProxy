@@ -264,7 +264,7 @@ namespace HermesProxy.Network.Auth.Handler
                 {
                     realm.VersionMajor  = reader.ReadUInt8();
                     realm.VersionMinor  = reader.ReadUInt8();
-                    realm.VersonBugfix  = reader.ReadUInt8();
+                    realm.VersionBugfix  = reader.ReadUInt8();
                     realm.Build         = reader.ReadUInt16();
                 }
 

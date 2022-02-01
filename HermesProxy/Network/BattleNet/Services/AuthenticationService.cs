@@ -8,7 +8,6 @@ using Google.Protobuf;
 
 using HermesProxy.Framework.Constants;
 using HermesProxy.Framework.Logging;
-using HermesProxy.Framework.Util;
 using HermesProxy.Network.BattleNet.Services;
 
 namespace HermesProxy.Network.BattleNet.Session
@@ -35,6 +34,8 @@ namespace HermesProxy.Network.BattleNet.Session
                 PayloadType = "web_auth_url",
                 Payload = ByteString.CopyFromUtf8($"https://127.0.0.1:8081/bnetserver/login")
             };
+
+            _build = (uint)request.ApplicationVersion;
 
             await SendRequest(ServiceHash.ChallengeListener, 3, externalChallenge);
 

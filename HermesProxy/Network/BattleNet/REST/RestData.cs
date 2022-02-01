@@ -261,10 +261,10 @@ namespace HermesProxy.Network.BattleNet.REST
         public int Id { get; set; }
 
         [JsonPropertyName("addresses")]
-        public List<Address> Addresses { get; set; } = new();
+        public List<JsonAddress> Addresses { get; set; } = new();
     }
 
-    public class Address
+    public class JsonAddress
     {
         [JsonPropertyName("ip")]
         public string Ip { get; set; }

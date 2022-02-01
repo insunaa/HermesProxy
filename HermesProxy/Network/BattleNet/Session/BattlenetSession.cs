@@ -28,12 +28,16 @@ namespace HermesProxy.Network.BattleNet.Session
         public delegate BattlenetRpcErrorCode ClientRequestHandler(Dictionary<string, Variant> parameters, ClientResponse response);
 
         readonly Dictionary<string, ClientRequestHandler> _clientRequestHandlers;
-        readonly Socket _socket;
-        readonly SslStream _sslStream;
         readonly byte[] _buffer = new byte[4096];
+        readonly byte[] _clientSecret = new byte[32];
+
+        Socket _socket;
+        SslStream _sslStream;
 
         bool _authed;
         uint _requestToken = 0;
+
+        uint _build = 0;
 
         public BattlenetSession(Socket socket, X509Certificate2 cert)
         {
@@ -45,7 +49,7 @@ namespace HermesProxy.Network.BattleNet.Session
                 { "Command_RealmListTicketRequest_v1_b9",   GetRealmListTicket },
                 { "Command_LastCharPlayedRequest_v1_b9",    GetLastPlayedCharacter },
                 { "Command_RealmListRequest_v1_b9",         GetRealmList },
-                // { "Command_RealmJoinRequest_v1_b9",         JoinRealm }
+                { "Command_RealmJoinRequest_v1_b9",         JoinRealm }
             };
 
             _socket = socket;
@@ -61,7 +65,7 @@ namespace HermesProxy.Network.BattleNet.Session
         {
             while (true)
             {
-                if (_sslStream == null)
+                if (_sslStream == null || _socket == null)
                     return;
 
                 var receivedLen = await _sslStream.ReadAsync(_buffer);
@@ -186,7 +190,7 @@ namespace HermesProxy.Network.BattleNet.Session
                 if (realmListInformation == null)
                     return BattlenetRpcErrorCode.WowServicesDeniedRealmListTicket;
 
-                // clientsercret thing
+                Buffer.BlockCopy(realmListInformation.Info.Secret.ToArray(), 0, _clientSecret, 0, _clientSecret.Length);
             }
 
             response.Attribute.Add(new Bgs.Protocol.Attribute()
@@ -209,7 +213,7 @@ namespace HermesProxy.Network.BattleNet.Session
             if (!_authed)
                 return BattlenetRpcErrorCode.Denied;
 
-            var compressed = RealmManager.GetRealmList();
+            var compressed = RealmManager.GetRealmList(_build);
             if (compressed.Length == 0)
                 return BattlenetRpcErrorCode.UtilServerFailedToSerializeResponse;
 
@@ -248,6 +252,15 @@ namespace HermesProxy.Network.BattleNet.Session
             return BattlenetRpcErrorCode.Ok;
         }
 
+        private BattlenetRpcErrorCode JoinRealm(Dictionary<string, Variant> parameters, ClientResponse response)
+        {
+            var realmAddress = GetParam(parameters, "Param_RealmAddress");
+            if (realmAddress != null)
+                return RealmManager.JoinRealm((uint)realmAddress.UintValue, _build, ((IPEndPoint)_socket.RemoteEndPoint).Address, _clientSecret, response);
+
+            return BattlenetRpcErrorCode.WowServicesInvalidJoinTicket;
+        }
+
         private Variant GetParam(Dictionary<string, Variant> parameters, string paramName) => parameters[paramName];
 
         private async Task SendData(byte[] data) => await _sslStream.WriteAsync(data);
@@ -255,7 +268,7 @@ namespace HermesProxy.Network.BattleNet.Session
         /// <summary>
         /// Returns the <see cref="Socket"/> instance <see cref="EndPoint"/>.
         /// </summary>
-        public string GetRemoteEndpoint() => $"{_socket.RemoteEndPoint}";
+        public string GetRemoteEndpoint() => $"{_socket?.RemoteEndPoint}";
 
         /// <summary>
         /// Closes the <see cref="SslStream"/> instance.
@@ -264,6 +277,10 @@ namespace HermesProxy.Network.BattleNet.Session
         {
             await _sslStream.ShutdownAsync();
             _sslStream?.Close();
+            _sslStream = null;
+
+            _socket.Close();
+            _socket = null;
         }
     }
 }

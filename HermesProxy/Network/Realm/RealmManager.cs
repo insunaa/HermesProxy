@@ -9,6 +9,7 @@ using Bgs.Protocol.GameUtilities.V1;
 using Google.Protobuf;
 
 using HermesProxy.Framework.Constants;
+using HermesProxy.Framework.Constants.Network;
 using HermesProxy.Framework.Logging;
 using HermesProxy.Framework.Util;
 using HermesProxy.Network.BattleNet.REST;

@@ -31,10 +31,8 @@ namespace HermesProxy.Crypto
 
         static byte[] SHA1Func(params byte[][] data)
         {
-            using (SHA1 alg = SHA1.Create())
-            {
-                return alg.ComputeHash(Combine(data));
-            }
+            using SHA1 alg = SHA1.Create();
+            return alg.ComputeHash(Combine(data));
         }
 
         static byte[] Combine(byte[][] buffers)

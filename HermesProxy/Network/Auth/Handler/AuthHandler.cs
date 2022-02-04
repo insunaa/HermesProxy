@@ -149,17 +149,15 @@ namespace HermesProxy.Network.Auth.Handler
 
         private static void SendLogonProof(AuthSession session, byte[] a, byte[] m1Hash, byte[] crc)
         {
-            using (var writer = new PacketWriter())
-            {
-                writer.WriteUInt8((byte)AuthCommand.LOGON_PROOF);
-                writer.WriteBytes(a);
-                writer.WriteBytes(m1Hash);
-                writer.WriteBytes(crc);
-                writer.WriteUInt8(0);
-                writer.WriteUInt8(0);
+            using var writer = new PacketWriter();
+            writer.WriteUInt8((byte)AuthCommand.LOGON_PROOF);
+            writer.WriteBytes(a);
+            writer.WriteBytes(m1Hash);
+            writer.WriteBytes(crc);
+            writer.WriteUInt8(0);
+            writer.WriteUInt8(0);
 
-                session.SendPacket(writer.GetData());
-            }
+            session.SendPacket(writer.GetData());
         }
 
         /// <summary>
@@ -208,13 +206,11 @@ namespace HermesProxy.Network.Auth.Handler
             Log.Print(LogType.Debug, "Server Auth Succeeded!");
             session.HasSucceededLogin = true;
 
-            using (var writer = new PacketWriter())
-            {
-                writer.WriteUInt8((byte)AuthCommand.REALM_LIST);
-                for (var i = 0; i < 4; ++i)
-                    writer.WriteUInt8(0);
-                session.SendPacket(writer.GetData());
-            }
+            using var writer = new PacketWriter();
+            writer.WriteUInt8((byte)AuthCommand.REALM_LIST);
+            for (var i = 0; i < 4; ++i)
+                writer.WriteUInt8(0);
+            session.SendPacket(writer.GetData());
         }
 
         /// <summary>

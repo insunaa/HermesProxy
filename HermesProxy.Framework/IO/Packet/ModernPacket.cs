@@ -39,16 +39,14 @@ namespace HermesProxy.Framework.IO.Packet
     {
         public ModernClientPacket(byte[] data)
         {
-            using (var reader = new PacketReader(data))
-            {
-                Header.Read(reader);
-                Opcode = reader.ReadUInt16();
+            using var reader = new PacketReader(data);
+            Header.Read(reader);
+            Opcode = reader.ReadUInt16();
 
-                if (Header.PacketSize == 0)
-                    Data = reader.ReadBytes(Header.PacketSize);
-                else
-                    Data = reader.ReadBytes(Header.PacketSize - 2);
-            }
+            if (Header.PacketSize == 0)
+                Data = reader.ReadBytes(Header.PacketSize);
+            else
+                Data = reader.ReadBytes(Header.PacketSize - 2);
         }
     }
 

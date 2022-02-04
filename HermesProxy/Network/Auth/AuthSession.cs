@@ -63,27 +63,25 @@ namespace HermesProxy.Network.Auth
 
         private void HandlePacket(byte[] data)
         {
-            using (var reader = new PacketReader(data))
+            using var reader = new PacketReader(data);
+            var command = (AuthCommand)reader.ReadUInt8();
+
+            Log.Print(LogType.Debug, $"Received Opcode: {command} (Size: {data.Length})");
+
+            switch (command)
             {
-                var command = (AuthCommand)reader.ReadUInt8();
-
-                Log.Print(LogType.Debug, $"Received Opcode: {command} (Size: {data.Length})");
-
-                switch (command)
-                {
-                    case AuthCommand.LOGON_CHALLENGE:
-                        AuthHandler.HandleLogonChallenge(this, reader);
-                        break;
-                    case AuthCommand.LOGON_PROOF:
-                        AuthHandler.HandleLogonProof(this, reader);
-                        break;
-                    case AuthCommand.REALM_LIST:
-                        AuthHandler.HandleRealmlist(this, reader);
-                        break;
-                    default:
-                        Log.Print(LogType.Error, $"Unknown Opcode: {command}");
-                        break;
-                }
+                case AuthCommand.LOGON_CHALLENGE:
+                    AuthHandler.HandleLogonChallenge(this, reader);
+                    break;
+                case AuthCommand.LOGON_PROOF:
+                    AuthHandler.HandleLogonProof(this, reader);
+                    break;
+                case AuthCommand.REALM_LIST:
+                    AuthHandler.HandleRealmlist(this, reader);
+                    break;
+                default:
+                    Log.Print(LogType.Error, $"Unknown Opcode: {command}");
+                    break;
             }
         }
 
@@ -92,29 +90,27 @@ namespace HermesProxy.Network.Auth
         /// </summary>
         public void SendLogonChallenge()
         {
-            using (var writer = new PacketWriter())
-            {
-                writer.WriteUInt8((byte)AuthCommand.LOGON_CHALLENGE);
-                writer.WriteUInt8(6);
-                writer.WriteUInt16((ushort)(Username.Length + 30));
-                writer.WriteBytes(Encoding.ASCII.GetBytes("WoW"));
-                writer.WriteUInt8(0);
-                writer.WriteUInt8(Settings.GetMajorPatchVersion());
-                writer.WriteUInt8(Settings.GetMinorPatchVersion());
-                writer.WriteUInt8(Settings.GetRevisionPatchVersion());
-                writer.WriteUInt16((ushort)Settings.ServerBuild);
-                writer.WriteBytes(Encoding.ASCII.GetBytes("68x"));
-                writer.WriteUInt8(0);
-                writer.WriteBytes(Encoding.ASCII.GetBytes("niW"));
-                writer.WriteUInt8(0);
-                writer.WriteBytes(Encoding.ASCII.GetBytes("SUne"));
-                writer.WriteUInt32(0x3C);
-                writer.WriteUInt32(0); // IP
-                writer.WriteUInt8((byte)Username.Length);
-                writer.WriteBytes(Encoding.ASCII.GetBytes(Username.ToUpper()));
+            using var writer = new PacketWriter();
+            writer.WriteUInt8((byte)AuthCommand.LOGON_CHALLENGE);
+            writer.WriteUInt8(6);
+            writer.WriteUInt16((ushort)(Username.Length + 30));
+            writer.WriteBytes(Encoding.ASCII.GetBytes("WoW"));
+            writer.WriteUInt8(0);
+            writer.WriteUInt8(Settings.GetMajorPatchVersion());
+            writer.WriteUInt8(Settings.GetMinorPatchVersion());
+            writer.WriteUInt8(Settings.GetRevisionPatchVersion());
+            writer.WriteUInt16((ushort)Settings.ServerBuild);
+            writer.WriteBytes(Encoding.ASCII.GetBytes("68x"));
+            writer.WriteUInt8(0);
+            writer.WriteBytes(Encoding.ASCII.GetBytes("niW"));
+            writer.WriteUInt8(0);
+            writer.WriteBytes(Encoding.ASCII.GetBytes("SUne"));
+            writer.WriteUInt32(0x3C);
+            writer.WriteUInt32(0); // IP
+            writer.WriteUInt8((byte)Username.Length);
+            writer.WriteBytes(Encoding.ASCII.GetBytes(Username.ToUpper()));
 
-                SendPacket(writer.GetData());
-            }
+            SendPacket(writer.GetData());
         }
 
         public void SendPacket(byte[] data)

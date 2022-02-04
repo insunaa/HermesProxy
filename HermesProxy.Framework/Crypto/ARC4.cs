@@ -1,61 +1,60 @@
-﻿namespace HermesProxy.Crypto
+﻿namespace HermesProxy.Framework.Crypto;
+
+public class ARC4
 {
-    public class ARC4
+    readonly byte[] _state;
+    byte _x;
+    byte _y;
+
+    public ARC4(byte[] key)
     {
-        readonly byte[] _state;
-        byte _x;
-        byte _y;
+        _state = new byte[256];
+        _x = _y = 0;
 
-        public ARC4(byte[] key)
+        KeySetup(key);
+    }
+
+    public int Process(byte[] buffer, int start, int count)
+    {
+        return InternalTransformBlock(buffer, start, count, buffer, start);
+    }
+
+    private void KeySetup(byte[] key)
+    {
+        byte index1 = 0;
+        byte index2 = 0;
+
+        for (int counter = 0; counter < 256; counter++)
         {
-            _state = new byte[256];
-            _x = _y = 0;
-
-            KeySetup(key);
+            _state[counter] = (byte)counter;
         }
-
-        public int Process(byte[] buffer, int start, int count)
+        _x = 0;
+        _y = 0;
+        for (int counter = 0; counter < 256; counter++)
         {
-            return InternalTransformBlock(buffer, start, count, buffer, start);
+            index2 = (byte)(key[index1] + _state[counter] + index2);
+            // swap byte
+            byte tmp = _state[counter];
+            _state[counter] = _state[index2];
+            _state[index2] = tmp;
+            index1 = (byte)((index1 + 1) % key.Length);
         }
+    }
 
-        private void KeySetup(byte[] key)
+    private int InternalTransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
+    {
+        for (var counter = 0; counter < inputCount; counter++)
         {
-            byte index1 = 0;
-            byte index2 = 0;
+            _x = (byte)(_x + 1);
+            _y = (byte)(_state[_x] + _y);
+            // swap byte
+            var tmp = _state[_x];
+            _state[_x] = _state[_y];
+            _state[_y] = tmp;
 
-            for (int counter = 0; counter < 256; counter++)
-            {
-                _state[counter] = (byte)counter;
-            }
-            _x = 0;
-            _y = 0;
-            for (int counter = 0; counter < 256; counter++)
-            {
-                index2 = (byte)(key[index1] + _state[counter] + index2);
-                // swap byte
-                byte tmp = _state[counter];
-                _state[counter] = _state[index2];
-                _state[index2] = tmp;
-                index1 = (byte)((index1 + 1) % key.Length);
-            }
+            var xorIndex = (byte)(_state[_x] + _state[_y]);
+            outputBuffer[outputOffset + counter] = (byte)(inputBuffer[inputOffset + counter] ^ _state[xorIndex]);
         }
-
-        private int InternalTransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
-        {
-            for (var counter = 0; counter < inputCount; counter++)
-            {
-                _x = (byte)(_x + 1);
-                _y = (byte)(_state[_x] + _y);
-                // swap byte
-                var tmp = _state[_x];
-                _state[_x] = _state[_y];
-                _state[_y] = tmp;
-
-                var xorIndex = (byte)(_state[_x] + _state[_y]);
-                outputBuffer[outputOffset + counter] = (byte)(inputBuffer[inputOffset + counter] ^ _state[xorIndex]);
-            }
-            return inputCount;
-        }
+        return inputCount;
     }
 }

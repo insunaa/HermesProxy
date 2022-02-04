@@ -1,7 +1,6 @@
-﻿namespace HermesProxy.Framework.IO.Packet.Messages
+﻿namespace HermesProxy.Framework.IO.Packet.Messages;
+
+public interface IReadable
 {
-    public interface IReadable
-    {
-        public void Read(PacketReader reader);
-    }
+    public void Read(PacketReader reader);
 }

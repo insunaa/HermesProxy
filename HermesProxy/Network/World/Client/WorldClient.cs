@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HermesProxy.Network.World.Client
+namespace HermesProxy.Network.World.Client;
+
+public class WorldClient
 {
-    public class WorldClient
-    {
-    }
 }

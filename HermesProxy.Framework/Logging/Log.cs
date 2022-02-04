@@ -4,85 +4,84 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace HermesProxy.Framework.Logging
+namespace HermesProxy.Framework.Logging;
+
+public enum LogType
 {
-    public enum LogType
+    Server,
+    Network,
+    Debug,
+    Error,
+    Warn,
+    Storage
+}
+
+public static class Log
+{
+    static Dictionary<LogType, (ConsoleColor Color, string Type)> LogToColorType = new()
     {
-        Server,
-        Network,
-        Debug,
-        Error,
-        Warn,
-        Storage
+        { LogType.Debug, (ConsoleColor.DarkBlue, " Debug   ") },
+        { LogType.Server, (ConsoleColor.Blue, " Server  ") },
+        { LogType.Network, (ConsoleColor.Green, " Network ") },
+        { LogType.Error, (ConsoleColor.Red, " Error   ") },
+        { LogType.Warn, (ConsoleColor.Yellow, " Warning ") },
+        { LogType.Storage, (ConsoleColor.Cyan, " Storage ") },
+    };
+
+    static BlockingCollection<(LogType Type, string Message)> logQueue = new();
+
+    public static bool IsLogging;
+
+    /// <summary>
+    /// Start the logging Thread and take logs out of the <see cref="BlockingCollection{T}"/>
+    /// </summary>
+    public static void Start()
+    {
+        var logThread = new Thread(() =>
+        {
+            IsLogging = true;
+
+            while (IsLogging)
+            {
+                Thread.Sleep(1);
+
+                PrintMessageFromQueue();
+            }
+        });
+
+        logThread.IsBackground = true;
+        logThread.Start();
     }
 
-    public static class Log
+    public static void PrintMessageFromQueue()
     {
-        static Dictionary<LogType, (ConsoleColor Color, string Type)> LogToColorType = new()
+        if (!logQueue.TryTake(out var msg))
+            return;
+
+        Console.Write($"{DateTime.Now:H:mm:ss} |");
+
+        Console.ForegroundColor = LogToColorType[msg.Type].Color;
+        Console.Write($"{LogToColorType[msg.Type].Type}");
+        Console.ResetColor();
+
+        Console.WriteLine($"| {msg.Message}");
+    }
+
+    public static void Print(LogType type, object text, [CallerMemberName] string method = "", [CallerFilePath] string path = "")
+    {
+        logQueue.Add((type, $"{SetCaller(method, path)} | {text}"));
+    }
+
+    private static string SetCaller(string method, string path)
+    {
+        string location = path;
+
+        if (location.Contains("\\"))
         {
-            { LogType.Debug,    (ConsoleColor.DarkBlue, " Debug   ") },
-            { LogType.Server,   (ConsoleColor.Blue,     " Server  ") },
-            { LogType.Network,  (ConsoleColor.Green,    " Network ") },
-            { LogType.Error,    (ConsoleColor.Red,      " Error   ") },
-            { LogType.Warn,     (ConsoleColor.Yellow,   " Warning ") },
-            { LogType.Storage,  (ConsoleColor.Cyan,     " Storage ") },
-        }; 
-
-        static BlockingCollection<(LogType Type, string Message)> logQueue = new();
-
-        public static bool IsLogging;
-
-        /// <summary>
-        /// Start the logging Thread and take logs out of the <see cref="BlockingCollection{T}"/>
-        /// </summary>
-        public static void Start()
-        {
-            var logThread = new Thread(() =>
-            {
-                IsLogging = true;
-
-                while (IsLogging)
-                {
-                    Thread.Sleep(1);
-
-                    PrintMessageFromQueue();
-                }
-            });
-
-            logThread.IsBackground = true;
-            logThread.Start();
+            string[] temp = location.Split('\\');
+            location = temp[temp.Length - 1].Replace(".cs", "");
         }
 
-        public static void PrintMessageFromQueue()
-        {
-            if (!logQueue.TryTake(out var msg))
-                return;
-
-            Console.Write($"{DateTime.Now:H:mm:ss} |");
-
-            Console.ForegroundColor = LogToColorType[msg.Type].Color;
-            Console.Write($"{LogToColorType[msg.Type].Type}");
-            Console.ResetColor();
-
-            Console.WriteLine($"| {msg.Message}");
-        }
-
-        public static void Print(LogType type, object text, [CallerMemberName] string method = "", [CallerFilePath] string path = "")
-        {
-            logQueue.Add((type, $"{SetCaller(method, path)} | {text}"));
-        }
-
-        private static string SetCaller(string method, string path)
-        {
-            string location = path;
-
-            if (location.Contains("\\"))
-            {
-                string[] temp = location.Split('\\');
-                location = temp[temp.Length - 1].Replace(".cs", "");
-            }
-
-            return location;
-        }
+        return location;
     }
 }

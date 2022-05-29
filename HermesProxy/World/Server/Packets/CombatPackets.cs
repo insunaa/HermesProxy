@@ -291,7 +291,7 @@ namespace HermesProxy.World.Server.Packets
 
     class ThreatUpdate : ServerPacket
     {
-        public ThreatUpdate() : base(Opcode.SMSG_THREAT_UPDATE) { }
+        public ThreatUpdate() : base(Opcode.SMSG_THREAT_UPDATE) { ThreatList = new(); }
         public override void Write()
         {
             _worldPacket.WritePackedGuid128(UnitGUID);
@@ -299,7 +299,7 @@ namespace HermesProxy.World.Server.Packets
             foreach (var info in ThreatList)
             {
                 _worldPacket.WritePackedGuid128(info.UnitGUID);
-                _worldPacket.WriteInt32(info.Threat);
+                _worldPacket.WriteInt64(info.Threat * 100);
             }
         }
         public WowGuid128 UnitGUID;
@@ -309,7 +309,7 @@ namespace HermesProxy.World.Server.Packets
 
     class HighestThreatUpdate : ServerPacket
     {
-        public HighestThreatUpdate() : base(Opcode.SMSG_HIGHEST_THREAT_UPDATE) { }
+        public HighestThreatUpdate() : base(Opcode.SMSG_HIGHEST_THREAT_UPDATE) { ThreatList = new(); }
         public override void Write()
         {
             _worldPacket.WritePackedGuid128(UnitGUID);
@@ -318,7 +318,7 @@ namespace HermesProxy.World.Server.Packets
             foreach (var info in ThreatList)
             {
                 _worldPacket.WritePackedGuid128(info.UnitGUID);
-                _worldPacket.WriteInt32(info.Threat);
+                _worldPacket.WriteInt64(info.Threat * 100);
             }
         }
         public WowGuid128 UnitGUID;

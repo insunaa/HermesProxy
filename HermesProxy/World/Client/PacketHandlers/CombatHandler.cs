@@ -157,11 +157,9 @@ namespace HermesProxy.World.Client
         [PacketHandler(Opcode.SMSG_THREAT_UPDATE)]
         void HandleThreatUpdate(WorldPacket packet)
         {
-            Log.Print(LogType.Error, "ThreatUpdate Received!");
             ThreatUpdate update = new();
             update.UnitGUID = packet.ReadPackedGuid().To128(GetSession().GameState);
             update.ThreatListCount = packet.ReadUInt32();
-            Log.Print(LogType.Error, $"{update.UnitGUID} . {update.ThreatListCount}");
             for (int i = 0; i < update.ThreatListCount; i++)
             {
                 var temp = new ThreatInfo();
@@ -174,12 +172,10 @@ namespace HermesProxy.World.Client
         [PacketHandler(Opcode.SMSG_HIGHEST_THREAT_UPDATE)]
         void HandleHighestThreatUpdate(WorldPacket packet)
         {
-            Log.Print(LogType.Error, "HighestThreatUpdate Received!");
             HighestThreatUpdate update = new();
             update.UnitGUID = packet.ReadPackedGuid().To128(GetSession().GameState);
             update.HighestThreatGUID = packet.ReadPackedGuid().To128(GetSession().GameState);
             update.ThreatListCount = packet.ReadUInt32();
-            Log.Print(LogType.Error, $"{update.UnitGUID} . {update.ThreatListCount}");
             for (int i = 0; i < update.ThreatListCount; i++)
             {
                 var temp = new ThreatInfo();
@@ -192,7 +188,6 @@ namespace HermesProxy.World.Client
         [PacketHandler(Opcode.SMSG_THREAT_CLEAR)]
         void HandleThreatClear(WorldPacket packet)
         {
-            Log.Print(LogType.Error, "ThreatClear Received!");
             ThreatClear clear = new();
             clear.UnitGUID = packet.ReadPackedGuid().To128(GetSession().GameState);
             SendPacketToClient(clear);
@@ -200,7 +195,6 @@ namespace HermesProxy.World.Client
         [PacketHandler(Opcode.SMSG_THREAT_REMOVE)]
         void HandleThreatRemove(WorldPacket packet)
         {
-            Log.Print(LogType.Error, "ThreatRemove Received!");
             ThreatRemove remove = new();
             remove.UnitGUID = packet.ReadPackedGuid().To128(GetSession().GameState);
             remove.AboutGUID = packet.ReadPackedGuid().To128(GetSession().GameState);

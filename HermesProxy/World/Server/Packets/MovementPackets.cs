@@ -570,4 +570,18 @@ namespace HermesProxy.World.Server.Packets
         public WowGuid128 MoverGUID;
         public uint TimeSkipped;
     }
+
+    class FlightSplineSync : ServerPacket
+    {
+        public FlightSplineSync() : base(Opcode.SMSG_FLIGHT_SPLINE_SYNC) { }
+
+        public override void Write()
+        {
+            _worldPacket.WritePackedGuid128(Guid);
+            _worldPacket.WriteFloat(SplineDist);
+        }
+
+        public WowGuid128 Guid;
+        public float SplineDist;
+    }
 }

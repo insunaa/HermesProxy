@@ -521,5 +521,14 @@ namespace HermesProxy.World.Client
                 GetSession().GameState.IsInTaxiFlight = true;
             }
         }
+
+        [PacketHandler(Opcode.SMSG_FLIGHT_SPLINE_SYNC)]
+        void HandleFlightSplineSync(WorldPacket packet)
+        {
+            FlightSplineSync sync = new();
+            sync.SplineDist = packet.ReadFloat();
+            sync.Guid = packet.ReadGuid().To128(GetSession().GameState);
+            SendPacketToClient(sync);
+        }
     }
 }
